@@ -7,7 +7,7 @@
 //
 
 import Foundation
-import BMSRTCLib
+
 
 
 
@@ -94,7 +94,7 @@ extension Data {
 }
 
 
-enum DataSetState : Int {
+public enum DataSetState : Int {
     case dsInactive, dsBrowse, dsEdit, dsInsert, dsSetKey,
     dsCalcFields, dsFilter, dsNewValue, dsOldValue, dsCurValue, dsBlockRead,
     dsInternalCalc, dsOpening
@@ -126,7 +126,7 @@ public class BMSRTCConnection {
 
 
 
-class BMSField {
+public class BMSField {
     
     fileprivate var pascalObj :  PASCAL_POBJ;
     
@@ -134,7 +134,7 @@ class BMSField {
         self.pascalObj = obj;
     }
     
-    var asString : String {
+    public var asString : String {
         
         get {
             
@@ -198,7 +198,7 @@ class BMSField {
         
     }
     
-    var asBlob : Data {
+    public var asBlob : Data {
         
         get {
             
@@ -250,7 +250,28 @@ class BMSField {
         
     }
     
-    var asInteger : NSNumber {
+    
+    public var asInteger : Int {
+        
+        get {
+           return Int(DB_FieldAsInteger(pascalObj))
+        
+        }
+        
+        set {
+            
+            
+            
+            DB_SetFieldAsInteger(pascalObj, NSNumber(value: newValue).uint32Value);
+            
+            
+            
+        }
+        
+        
+    }
+    
+    public var asNSNumber : NSNumber {
         
         get {
             return NSNumber(value: DB_FieldAsInteger(pascalObj))
@@ -266,7 +287,7 @@ class BMSField {
         
     }
     
-    var asFloat : Double {
+    public var asFloat : Double {
         
         get {
             return DB_FieldAsFloat(pascalObj);
@@ -279,7 +300,7 @@ class BMSField {
         
     }
     
-    var asDateTime : Date {
+    public var asDateTime : Date {
         
         get {
             return  Date(timeIntervalSince1970: Double(DB_FieldAsMacDateTime(pascalObj)));
@@ -294,7 +315,7 @@ class BMSField {
         
     }
     
-    var asDateFormatString : String {
+    public var asDateFormatString : String {
         
         get {
             return String(cString: BMSFormatDateTime("d mmmm yyyy", Int64(ceil(Double(DB_FieldAsMacDateTime(pascalObj))))));
@@ -315,7 +336,7 @@ class BMSField {
     
 }
 
-class BMSRTCMemDataSet {
+public class BMSRTCMemDataSet {
     
     fileprivate var pascalObj :  PASCAL_POBJ;// uint;
     
@@ -332,7 +353,7 @@ class BMSRTCMemDataSet {
     
     }
     
-    func getDataSet(_ sql:String)  {
+    public func getDataSet(_ sql:String)  {
         RTCMemDataset_GetData(pascalObj,sql,0);
    
     }
@@ -348,17 +369,17 @@ class BMSRTCMemDataSet {
         
     }
     
-    func updateData(_ aTableName : String)  {
+    public func updateData(_ aTableName : String)  {
          RTCMemDataset_UpdateData(pascalObj,aTableName) ;
     
     }
     
-    func fieldbyName(_ name:String) -> BMSField {
+    public func fieldbyName(_ name:String) -> BMSField {
         
         return BMSField(withPasObject: RTCMemDataset_FieldByName(pascalObj,name ) );
     }
     
-    func locateIntegerField(_ name:String,_ aValue : NSNumber) -> Bool {
+    public func locateIntegerField(_ name:String,_ aValue : NSNumber) -> Bool {
         
         if RTCMemDataset_LocateInteger1Field(pascalObj, name, aValue.uint32Value)==1 {
             return true
@@ -367,51 +388,53 @@ class BMSRTCMemDataSet {
         }
     }
     
-    func append() {
+    public func append() {
         RTCMemDataset_Append(pascalObj) ;
     }
     
-    func edit()  {
+    public func edit()  {
         RTCMemDataset_Edit(pascalObj) ;
     }
     
-    func post()  {
+    public func post()  {
         RTCMemDataset_Post(pascalObj) ;
     }
     
-    func close()  {
+    public func close()  {
         RTCMemDataset_Close(pascalObj) ;
     }
     
-    func delete()  {
+    public func delete()  {
         RTCMemDataset_Delete(pascalObj);
     }
     
-    func cancel() {
+    public func cancel() {
         RTCMemDataset_Cancel(pascalObj);
 
     }
     
-    func recordCount() -> uint {
+    
+    
+    public func recordCount() -> Int {
         
-        return RTCMemDataset_RecordCount(pascalObj);
+        return Int(RTCMemDataset_RecordCount(pascalObj));
     }
     
-    var state : DataSetState {
+    public var state : DataSetState {
         
         get {
             
             
             return DataSetState(rawValue: Int(RTCMemDataset_GetState(pascalObj)))!;
             
-          //  (rawValue : RTCMemDataset_GetState(pascalObj));
+         
         }
         
         
         
     }
     
-    var recNo : Int {
+    public var recNo : Int {
         
         get {
             
@@ -425,6 +448,39 @@ class BMSRTCMemDataSet {
         }
     }
     
+    public func bof() -> Bool {
+        
+        if RTCMemDataset_BOF(pascalObj)==1 {
+            return true;
+        } else {
+            return false;
+        }
+    }
+    
+    public func eof() -> Bool {
+        
+        if RTCMemDataset_EOF(pascalObj)==1 {
+            return true;
+        } else {
+            return false;
+        }
+    }
+    
+    public func first() {
+        
+        RTCMemDataset_First(pascalObj)
+    }
+    
+    public func last() {
+        
+        RTCMemDataset_Last(pascalObj)
+    }
+    
+    public func next() {
+        
+        RTCMemDataset_Next(pascalObj)
+    }
+    
     func testString(StringToTest str:String) -> Bool {
         if RTCMemDataset_TestString(pascalObj,str)==1 {
             return true;
@@ -433,7 +489,7 @@ class BMSRTCMemDataSet {
         }
     }
     
-    func free() {
+    public func free() {
         
         RTCMemDataset_Free(pascalObj);
         freeok = true;
