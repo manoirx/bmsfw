@@ -1,0 +1,6 @@
+framework module BMSRTCLib {
+  umbrella header "BMSRTCLib.h"
+
+  export *
+  module * { export * }
+}
