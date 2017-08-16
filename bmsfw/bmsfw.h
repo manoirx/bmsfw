@@ -7,6 +7,7 @@
 //
 
 #import <UIKit/UIKit.h>
+#import <BMSRTCLib/BMSRTCLib.h>
 
 //! Project version number for bmsfw.
 FOUNDATION_EXPORT double bmsfwVersionNumber;
